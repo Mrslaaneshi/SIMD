@@ -1,0 +1,52 @@
+#include <benchmark/benchmark.h>
+#include <x86intrin.h>
+#include <cstring>
+
+#define ARR_SIZE 1024
+#define VAL 50
+
+static int16_t *getRandArr() {
+    auto res = new int16_t[ARR_SIZE];
+    for (int i = 0; i < ARR_SIZE; ++i) {
+        res[i] = static_cast<int16_t>(rand() % (VAL * 2));
+    }
+    return res;
+}
+
+static auto arr = getRandArr();
+
+static int16_t *getAllignedArr() {
+    auto res = aligned_alloc(16, sizeof(int16_t) * ARR_SIZE);
+    memcpy(res, arr, sizeof(int16_t) * ARR_SIZE);
+    return static_cast<int16_t *>(res);
+}
+
+static auto allignedArr = getAllignedArr();
+
+static void BM_Count(benchmark::State &state) {
+    for (auto _ : state) {
+        int64_t cnt = 0;
+        for (int i = 0; i < ARR_SIZE; ++i)
+            if (arr[i] == VAL)
+                ++cnt;
+        benchmark::DoNotOptimize(cnt);
+    }
+}
+
+BENCHMARK(BM_Count);
+
+static void BM_SSE_COUNT_SET_EPI(benchmark::State &state) {
+    for (auto _ : state) {
+        int64_t cnt = 0;
+
+        auto sseVal = _mm_set1_epi16(VAL);
+        for (int i = 0; i < ARR_SIZE; i += 8) {
+            auto sseArr = _mm_set_epi16(arr[i + 7], arr[i + 6], arr[i + 5], arr[i + 4], arr[i + 3], arr[i + 2],
+                                        arr[i + 1], arr[i]);
+            cnt += _popcnt32(_mm_movemask_epi8(_mm_cmpeq_epi16(sseVal, sseArr)));
+        }
+        benchmark::DoNotOptimize(cnt >> 1);
+    }
+}
+
+BENCHMARK(BM_SSE_COUNT_SET_EPI);
