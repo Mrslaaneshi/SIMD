@@ -1,1 +1,34 @@
-hell yeah
+#include <cstring>
+#include <stdlib.h>
+#include <iostream>
+#include <xmmintrin.h>
+#include <immintrin.h>
+#include <immintrin.h>
+using namespace std;
+
+#define ARR_SIZE 1024
+#define VAL 50
+
+static float* getRandArr() 
+{
+    auto res = new float[ARR_SIZE];
+    for (int i = 0; i < ARR_SIZE; ++i) {
+        res[i] = static_cast<float>(rand() % (VAL * 2));
+    }
+    return res;
+}
+
+static auto a = getRandArr();
+static auto b = getRandArr();
+
+
+int main()
+{
+    auto c = new float[ARR_SIZE];
+    for (int i = 0; i < ARR_SIZE; i += 4)
+    {
+        auto loaded_a = _mm_loadu_ps(&a[i]);
+        auto loaded_b = _mm_loadu_ps(&b[i]);
+        _mm_storeu_ps(&c[i], _mm_add_ps(loaded_a, loaded_b));
+    }
+}
