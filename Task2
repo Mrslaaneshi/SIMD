@@ -20,15 +20,25 @@ static float* getRandArr()
 
 static auto a = getRandArr();
 static auto b = getRandArr();
+auto c = new float[ARR_SIZE];
 
-
-int main()
+auto simd(int N, float* a, float* b, float* c)
 {
-    auto c = new float[ARR_SIZE];
     for (int i = 0; i < ARR_SIZE; i += 4)
     {
         auto loaded_a = _mm_loadu_ps(&a[i]);
         auto loaded_b = _mm_loadu_ps(&b[i]);
         _mm_storeu_ps(&c[i], _mm_add_ps(loaded_a, loaded_b));
     }
+    return c;
+}
+
+auto scalar(int N, float* a, float* b, float* c)
+{
+   const int aligendN = N;
+   for (int i = alignedN; i < N; ++i)
+   {
+    c[i] = a[i] + b[i];
+    }
+return c;
 }
