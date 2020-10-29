@@ -1,0 +1,64 @@
+#include <cstring>
+#include <stdlib.h>
+#include <iostream>
+#include <xmmintrin.h>
+#include <immintrin.h>
+#include <immintrin.h>
+using namespace std;
+
+#define ARR_SIZE 8
+#define VAL 50
+
+int N = ARR_SIZE;
+
+static float* getRandArr1() {
+    auto res = new float[N*N];
+    for (int i = 0; i < N*N; ++i) {
+        res[i] = static_cast<float>(rand() % (VAL * 2));
+    }
+    return res;
+}
+
+static auto a = getRandArr1();
+static auto b = getRandArr1();
+
+auto simd(int N, float* a, float* b, float* c)
+{
+    for (int i = 0; i < N; i += 4)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            __m128 c0 = { 0,0,0, };
+            for (int k = 0; k < N; k++)
+            {
+                c0 = _mm_add_ps(c0, _mm_mul_ps(_mm_loadu_ps(a + i + k * N), _mm_loadu_ps(b + k + j * N)));
+            }
+            _mm_storeu_ps(c + i + j * N, c0);
+        }
+    }
+    return c;
+}
+
+auto scalar(int N, float* a, float* b, float* c)
+{
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            float cij = 0;
+            for (int k = 0; k < N; k++)
+            {
+                cij += a[i + k * N] * b[k + j * N];
+            }
+            c[i + j * N] = cij;
+        }
+    }
+    return c;
+}
+
+int main()
+{
+    auto c = new float[N * N];
+    c = simd(N, a, b, c);
+
+}
