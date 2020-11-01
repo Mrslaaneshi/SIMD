@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-#define N 4
+#define N 20
 #define VAL 50
                
 
