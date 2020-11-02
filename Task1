@@ -32,7 +32,7 @@ int simd(int* arr)
 {
     int cnt = 0;
     auto sseVal = _mm_set1_epi32(VAL);
-    for (int i = 0; i < ARR_SIZE; i += 8) 
+    for (int i = 0; i < ARR_SIZE; i += 4) 
     {
         auto sseArr = _mm_set_epi32(arr[i+3], arr[i + 2], arr[i + 1], arr[i]);
         cnt += _popcnt32(_mm_movemask_epi8(_mm_cmpgt_epi32(sseVal, sseArr)));
