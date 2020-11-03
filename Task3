@@ -19,7 +19,7 @@ static int* getRandArr()
 }
 
 
-auto simd(int* a, int* b, int* c)
+void simd(int* a, int* b, int* c)
 {
     for (int i = 0; i < N; i += 4)
     {
@@ -35,7 +35,7 @@ auto simd(int* a, int* b, int* c)
     }
 }
 
-auto scalar(int* a, int* b, int* c)
+void scalar(int* a, int* b, int* c)
 {
     for (int i = 0; i < N; i++)
     {
