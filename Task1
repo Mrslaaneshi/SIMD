@@ -41,10 +41,3 @@ int simd(int* arr)
     return cnt;
 }
 
-void main()
-{
-    static auto arr = getRandArr();
-    std::cout << scalar(arr);
-
-    std::cout << simd(arr);
-}
