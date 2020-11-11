@@ -16,7 +16,9 @@ static float* getRandArr()
     }
     return res;
 }
-
+static auto a = getRandArr();
+static auto b = getRandArr();
+static auto c = new float[N];
 
 void scalar(float* a, float* b, float* c)
 {
