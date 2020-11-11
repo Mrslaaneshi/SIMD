@@ -1,13 +1,20 @@
 #include <emmintrin.h>
+#include <immintrin.h>
 #include <intrin.h>
 #include <iostream>
+#include <time.h>
+#include <stdlib.h>
+#include <cstdlib>
 
-#define ARR_SIZE 1024
+#define N 102400
 #define VAL 50
 
+using namespace std;
+
+
 static int* getRandArr() {
-    auto res = new int[ARR_SIZE];
-    for (int i = 0; i < ARR_SIZE; ++i) 
+    auto res = new int[N];
+    for (int i = 0; i < N; ++i)
     {
         res[i] = rand() % (VAL * 2);
     }
@@ -18,7 +25,7 @@ static int* getRandArr() {
 int scalar(int* arr)
 {
     int cnt = 0;
-    for (int i = 0; i < ARR_SIZE; ++i)
+    for (int i = 0; i < N; ++i)
     {
         if (arr[i] == VAL)
         {
@@ -31,11 +38,10 @@ int scalar(int* arr)
 int simd(int* arr)
 {
     int cnt = 0;
-    auto sseVal = _mm_set1_epi32(VAL);
-    for (int i = 0; i < ARR_SIZE; i += 4) 
-    {
-        auto sseArr = _mm_set_epi32(arr[i+3], arr[i + 2], arr[i + 1], arr[i]);
-        cnt += _popcnt32(_mm_movemask_epi8(_mm_cmpgt_epi32(sseVal, sseArr)));
+    auto avxVal = _mm256_set1_epi32(VAL);
+    for (int i = 0; i < N; i += 8) {
+        cnt += __popcnt(_mm256_movemask_epi8(_mm256_cmpeq_epi32(avxVal, _mm256_loadu_si256((__m256i*) & arr[i]))));
+                
     }
     cnt = cnt / 4;
     return cnt;
