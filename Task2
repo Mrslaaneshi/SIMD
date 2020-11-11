@@ -1,17 +1,22 @@
+#include <stdlib.h>
+#include <cstdlib>
+using namespace std::chrono;
+
 #include <emmintrin.h>
 #include <immintrin.h>
 #include <intrin.h>
 #include <iostream>
 
 
-#define ARR_SIZE 4096
+#define N 10240000
 #define VAL 50
 
+using namespace std;
 
 static float* getRandArr()
 {
-    auto res = new float[ARR_SIZE];
-    for (int i = 0; i < ARR_SIZE; ++i) {
+    auto res = new float[N];
+    for (int i = 0; i < N; ++i) {
         res[i] = rand() % (VAL * 2);
     }
     return res;
@@ -22,17 +27,16 @@ static auto c = new float[N];
 
 void scalar(float* a, float* b, float* c)
 {
-    for (int i = 0; i < ARR_SIZE; ++i)
+    for (int i = 0; i < N; ++i)
     {
         c[i] = a[i] + b[i];
     }
 }
 void simd(float* a, float* b, float* c)
 {
-    for (int i = 0; i < ARR_SIZE; i += 8) {
+    for (int i = 0; i < N; i += 8) {
         auto loaded_a = _mm256_loadu_ps(&a[i]);
         auto loaded_b = _mm256_loadu_ps(&b[i]);
         _mm256_storeu_ps(&c[i], _mm256_add_ps(loaded_a, loaded_b));
     }
 }
-
