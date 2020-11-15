@@ -1,29 +1,19 @@
 #include <stdlib.h>
-#include <cstdlib>
-using namespace std::chrono;
-
-#include <emmintrin.h>
 #include <immintrin.h>
-#include <intrin.h>
 #include <iostream>
 
-
-#define N 10240000
-#define VAL 50
-
 using namespace std;
+
+#define N 10240
 
 static float* getRandArr()
 {
     auto res = new float[N];
     for (int i = 0; i < N; ++i) {
-        res[i] = rand() % (VAL * 2);
+        res[i] = rand();
     }
     return res;
 }
-static auto a = getRandArr();
-static auto b = getRandArr();
-static auto c = new float[N];
 
 void scalar(float* a, float* b, float* c)
 {
@@ -32,6 +22,7 @@ void scalar(float* a, float* b, float* c)
         c[i] = a[i] + b[i];
     }
 }
+
 void simd(float* a, float* b, float* c)
 {
     for (int i = 0; i < N; i += 8) {
@@ -40,3 +31,4 @@ void simd(float* a, float* b, float* c)
         _mm256_storeu_ps(&c[i], _mm256_add_ps(loaded_a, loaded_b));
     }
 }
+
