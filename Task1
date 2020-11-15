@@ -34,11 +34,12 @@ int scalar(int* arr)
 
 int simd(int* arr)
 {
-    int cnt = 0;
-    auto avxVal = _mm256_set1_epi32(VAL);
-    for (int i = 0; i < N; i += 8) {
-        cnt += _mm_popcnt_u32(_mm256_movemask_epi8(_mm256_cmpeq_epi32(avxVal, _mm256_loadu_si256((__m256i*) & arr[i]))));
-    }
-    cnt = cnt / 4;
-    return cnt;
+	int cnt = 0;
+	auto avxVal = _mm256_set1_epi32(VAL);
+	for (int i = 0; i < N; i += 8) {
+		auto b = _mm256_cmpeq_epi32(avxVal, _mm256_loadu_si256((__m256i*) & arr[i]));
+		cnt += _mm_popcnt_u32(_mm256_movemask_epi8(b));
+	}
+	cnt = cnt / 4;
+	return cnt;
 }
