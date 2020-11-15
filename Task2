@@ -6,7 +6,7 @@ using namespace std;
 
 #define N 1024
 
-static float* getRandArr()
+static float* getArr()
 {
     auto res = new float[N];
     for (int i = 0; i < N; ++i) {
