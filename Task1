@@ -4,12 +4,12 @@
 #include <iostream>
 
 #define N 1024
-#define VAL 50
+#define VAL 60
 
 using namespace std;
 
 
-static int* getRandArr() {
+static int* getArr() {
     auto res = new int[N];
     for (int i = 0; i < N; ++i)
     {
@@ -19,7 +19,7 @@ static int* getRandArr() {
 }
 
 
-int scalar(int* arr)
+int scalar(int* a)
 {
     int cnt = 0;
     for (int i = 0; i < N; ++i)
@@ -32,12 +32,12 @@ int scalar(int* arr)
     return cnt;
 }
 
-int simd(int* arr)
+int simd(int* a)
 {
 	int cnt = 0;
 	auto avxVal = _mm256_set1_epi32(VAL);
 	for (int i = 0; i < N; i += 8) {
-		auto b = _mm256_cmpeq_epi32(avxVal, _mm256_loadu_si256((__m256i*) & arr[i]));
+		auto b = _mm256_cmpeq_epi32(avxVal, _mm256_loadu_si256((__m256i*) & a[i]));
 		cnt += _mm_popcnt_u32(_mm256_movemask_epi8(b));
 	}
 	cnt = cnt / 4;
